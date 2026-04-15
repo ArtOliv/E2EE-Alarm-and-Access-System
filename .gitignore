@@ -1,2 +1,9 @@
-node_modules/
+# Segredos
 .env
+
+# Dependências
+node_modules/
+
+# Dados persistentes
+data/db/
+Mosquitto/data/

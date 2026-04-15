@@ -1,0 +1,33 @@
+services:
+  # Banco de dados
+  mongodb:
+    image: mongo:latest
+    container_name: access_sys_db
+    restart: unless-stopped
+    volumes:
+      - ./data/db:/data/db
+
+  # Broker MQTT
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: access_sys_broker
+    restart: unless-stopped
+    volumes:
+      - ./Mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./Mosquitto/config/conf.d:/mosquitto/config/conf.d:ro
+      - ./Mosquitto/data:/mosquitto/data
+    ports:
+      - "1883:1883"
+
+  # Backend
+#  backend:
+#    build: ./Backend
+#    container_name: access_sys_backend
+#    restart: unless-stopped
+#    env_file:
+#      - ./Backend/.env
+#    depends_on:
+#      - mongodb
+#      - mosquitto
+#    ports:
+#      - "3000:3000"
