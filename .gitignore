@@ -1,8 +1,31 @@
 # Segredos
 .env
 
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
 # Dependências
 node_modules/
+dist
+dist-ssr
+*.local
+
+# Arquivos e diretórios de editor de código
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # Dados persistentes
 data/db/
