@@ -6,6 +6,8 @@ services:
     restart: unless-stopped
     volumes:
       - ./data/db:/data/db
+    ports:
+      - "27017:27017"
 
   # Broker MQTT
   mosquitto:
