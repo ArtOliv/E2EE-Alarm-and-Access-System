@@ -4,7 +4,7 @@ FROM node:22-alpine
 # Diretório de trabalho do container
 WORKDIR /usr/src/app
 
-# Primeiramente copia os arquivos de dependências ajusatndo o dono
+# Primeiramente copia os arquivos de dependências ajustando o dono
 COPY --chown=node:node package.json package-lock.json ./
 
 # Instala as dependências
@@ -20,4 +20,4 @@ USER node
 EXPOSE 3000
 
 # Comando de inicialização
-CMD ["node", "app.js"]
+CMD ["node", "index.js"]
