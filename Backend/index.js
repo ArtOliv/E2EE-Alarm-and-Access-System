@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const fastify = require("fastify")({ logger: true })
-const dbConfig = require("./src/config/Database");
-const mqttService = require("./src/services/MqttService");
+const dbConfig = require("./src/config/database");
+const mqttService = require("./src/services/mqttService");
 
 // Conecta ao MongoDb
 mongoose.connect(dbConfig.url, dbConfig.options)
@@ -33,7 +33,7 @@ fastify.register(require("@fastify/cookie"), {
 });
 
 // Registro das rotas da API
-fastify.register(require("./src/routes/Auth"), {prefix: "/api"});
+fastify.register(require("./src/routes/auth"), {prefix: "/api"});
 
 // Inicia server Fastify
 const startFastify = async () => {

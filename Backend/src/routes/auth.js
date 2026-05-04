@@ -1,4 +1,4 @@
-const admin = require("../models/Admins")
+const admin = require("../models/admins")
 
 module.exports = async function(fastify, options){
     fastify.post("/login", async(request, reply) => {

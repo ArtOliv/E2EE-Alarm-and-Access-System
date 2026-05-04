@@ -1,7 +1,7 @@
-const mqttClient = require("../mqtt/MqttClient");
-const command = require("../models/Command");
-const log = require("../models/Log");
-const users = require("../models/Users");
+const mqttClient = require("../mqtt/mqttClient");
+const command = require("../models/command");
+const log = require("../models/log");
+const users = require("../models/users");
 
 // Trata o que for recebido nos tópicos pelo ESP32
 const initMqttLogic = () => {
