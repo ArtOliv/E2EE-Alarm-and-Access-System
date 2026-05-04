@@ -26,7 +26,7 @@ export default function TagManager({tags, onAddTag, onRemoveTag}){
                             <Tag className="h-5 w-5 text-accent" />
                             Gerenciar Tags
                         </CardTitle>
-                        <CardDescription>Cadastrar e remover UIDs</CardDescription>
+                        <CardDescription>Cadastrar e remover TAG IDs</CardDescription>
                     </div>
                     <Button size="sm" variant="outline" onClick={() => setShowForm(!showForm)} className="border-accent/50 text-accent hover:bg-accent/10 cursor-pointer">
                         <Plus className="h-4 w-4" />
@@ -38,7 +38,7 @@ export default function TagManager({tags, onAddTag, onRemoveTag}){
                 {showForm && (
                     <div className="mb-4 space-y-3 rounded-lg border border-border bg-secondary/30 p-3">
                         <Input
-                            placeholder="UID (ex: A1B2C3D4)"
+                            placeholder="TAG ID (ex: A1B2C3D4)"
                             value={newTagId}
                             onChange={(e) => setNewTagId(e.target.value)}
                             className="font-mono"

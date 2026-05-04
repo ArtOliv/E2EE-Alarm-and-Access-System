@@ -22,7 +22,7 @@ export default function AccessLogTable({logs}){
                 <div className="sticky top-0 hidden border-b border-border bg-card/95 backdrop-blur-3xl sm:grid sm:grid-cols-4 sm:gap-4 sm:px-4 sm:py-3">
                     <span className="text-xs font-medium uppercase text-muted-foreground">Horário</span>
                     <span className="text-xs font-medium uppercase text-muted-foreground">Usuário</span>
-                    <span className="text-xs font-medium uppercase text-muted-foreground">UID</span>
+                    <span className="text-xs font-medium uppercase text-muted-foreground">TAG ID</span>
                     <span className="text-xs font-medium uppercase text-muted-foreground">Status</span>
                 </div>
 
