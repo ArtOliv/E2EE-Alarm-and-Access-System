@@ -23,7 +23,11 @@ fastify.register(require("@fastify/cors"), {
 
 // Registro do JWT (JSON Web Token)
 fastify.register(require("@fastify/jwt"), {
-    secret: process.env.JWT_SECRET
+    secret: process.env.JWT_SECRET,
+    cookie: {
+        cookieName: "token",
+        signed: true
+    }
 });
 
 // Registro do Cookie

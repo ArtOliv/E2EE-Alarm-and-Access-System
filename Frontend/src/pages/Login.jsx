@@ -1,12 +1,14 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { api } from "../services/api"
+import { useAuth } from "../contexts/AuthContext"
 import LoginManager from "../components/LoginManager"
 
 export default function Login(){
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState("")
     const navigate = useNavigate()
+    const {login} = useAuth();
 
     const handleLogin = async (email, password) => {
         setIsLoading(true)
@@ -15,7 +17,7 @@ export default function Login(){
         try{
             const response = await api.post("/login", {email, password});
 
-            console.log("Sucesso:", response.data.message);
+            login(response.data.user);
 
             navigate("/");
         } catch(error){
