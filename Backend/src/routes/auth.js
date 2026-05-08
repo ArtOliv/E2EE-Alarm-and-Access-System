@@ -25,7 +25,8 @@ module.exports = async function(fastify, options){
             const token = fastify.jwt.sign({
                 id: adminAuth._id,
                 role: adminAuth.role,
-                name: adminAuth.name
+                name: adminAuth.name,
+                email: adminAuth.email
             }, {expiresIn: "12h"});
 
             // Envia o JWT em um Cookie
@@ -65,6 +66,38 @@ module.exports = async function(fastify, options){
             });
         } catch(error){
             return reply.status(401).send({error: "Sessão inválida ou expirada."});
+        }
+    });
+
+    // Rota de para atualizar senhas
+    fastify.put("/update-password", async (request, reply) => {
+        try{
+            await request.jwtVerify(); // Verifica de token do usuário é válido
+            const userId = request.user.id;
+
+            const {oldPassword, newPassword} = request.body;
+
+            if(!oldPassword || !newPassword){
+                return reply.status(400).send({error: "Preencha a senha atual e a nova"});
+            }
+
+            const adminAuth = await admin.findById(userId).select("+password");
+
+            const isMatch = await adminAuth.comparePassword(oldPassword);
+            if(!isMatch){
+                return reply.status(401).send({error: "A senha atual está incorreta."});
+            }
+
+            adminAuth.password = newPassword;
+            await adminAuth.save();
+
+            return reply.send({message: "Senha atualizada com sucesso!"});
+        } catch(error){
+            if(error.code === "FST_JWT_NO_AUTHORIZATION_IN_COOKIE" || error.code === "FAST_JWT_INVALID_SIGNATURE"){
+                return reply .status(401).send({error: "Não autorizado."});
+            }
+
+            return reply.status(500).send({error: "Erro interno do servidor."});
         }
     });
 

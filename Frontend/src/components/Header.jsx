@@ -1,7 +1,13 @@
-import { Wifi, WifiOff, Clock, Cpu, ShieldCheck } from "lucide-react"
+import { useState } from "react"
+import { Wifi, WifiOff, Clock, Cpu, ShieldCheck, UserCircle } from "lucide-react"
 import { cn } from "../lib/utils"
+import { useAuth } from "../contexts/AuthContext"
+import UserProfileSidebar from "./UserProfileSidebar"
 
 export default function Header({isConnected, uptime}){
+    const[isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const {user} = useAuth();
+
     return(
         <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
@@ -44,7 +50,19 @@ export default function Header({isConnected, uptime}){
                     <Clock className="h-3 w-3 text-muted-foreground" />
                     <span className="font-mono text-primary">{uptime}</span>
                 </div>
+
+                <div className="hidden sm:block w-px h-8 bg-border/50 mx-1"></div>
+
+                {/* Botão de Perfil do Usuário */}
+                <button onClick={() => setIsSidebarOpen(true)} className="flex items-center gap-2 rounded-lg bg-secondary/50 px-3 py-2 border border-border/50 hover:bg-secondary transition-colors cursor-pointer">
+                    <UserCircle className="h-5 w-5 text-primary" />
+                    <span className="text-sm font-medium text-foreground">
+                        {user?.role === "MASTER" ? "Mestre" : "Admin"}
+                    </span>
+                </button>
             </div>
+
+            <UserProfileSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
         </header>
     )
 }

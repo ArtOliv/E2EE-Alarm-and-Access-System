@@ -18,7 +18,8 @@ mongoose.connect(dbConfig.url, dbConfig.options)
 // Configuração do CORS
 fastify.register(require("@fastify/cors"), {
     origin: process.env.FRONTEND_URL,
-    credentials: true
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"]
 });
 
 // Registro do JWT (JSON Web Token)
