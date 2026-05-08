@@ -1,6 +1,6 @@
-const dbConfig = require("./src/config/Database")
+const dbConfig = require("./src/config/database")
 const mongoose = require("mongoose")
-const admin = require("./src/models/Admins")
+const admin = require("./src/models/admins")
 
 async function seedMasterAdmin(){
     try{

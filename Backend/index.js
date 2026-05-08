@@ -39,6 +39,7 @@ fastify.register(require("@fastify/cookie"), {
 
 // Registro das rotas da API
 fastify.register(require("./src/routes/auth"), {prefix: "/api"});
+fastify.register(require("./src/routes/users"), {prefix: "/api"});
 
 // Inicia server Fastify
 const startFastify = async () => {

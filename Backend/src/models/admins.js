@@ -25,7 +25,9 @@ const AdminSchema = new mongoose.Schema({
     },
     rfid_tag: {
         type: String,
-        default: null
+        unique: true,
+        uppercase: true,
+        sparse: true,
     },
     createdAt: {
         type: Date,

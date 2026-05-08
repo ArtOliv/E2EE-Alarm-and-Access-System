@@ -2,6 +2,8 @@ const mqttClient = require("../mqtt/mqttClient");
 const command = require("../models/command");
 const log = require("../models/log");
 const users = require("../models/users");
+const admins = require("../models/admins")
+const members = require("../models/members")
 
 // Trata o que for recebido nos tópicos pelo ESP32
 const initMqttLogic = () => {
@@ -97,4 +99,23 @@ const updateUserConfig = async (admins, authorizedUsers) => {
     }
 };
 
-module.exports = { initMqttLogic, sendAlarmCommand, updateUserConfig };
+const syncUsers = async () => {
+    try{
+        // Busca tags existentes de Administradores
+        const adminDocs = await admins.find({rfid_tag: {$ne: null, $ne: ""}});
+        const adminTags = adminDocs.map(a => a.rfid_tag);
+
+        // Busca tags de Membros
+        const memberDocs = await members.find({});
+        const memberTags = memberDocs.map(m => m.rfid_tag);
+
+        await updateUserConfig(adminTags, memberTags);
+
+        return true;
+    } catch(error){
+        console.error("Erro na sincronização automática das tags:", error);
+        throw error;
+    }
+}
+
+module.exports = { initMqttLogic, sendAlarmCommand, updateUserConfig, syncUsers };
