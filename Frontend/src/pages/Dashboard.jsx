@@ -11,13 +11,10 @@ export default function Dashboard(){
     uptime,
     alarmActive,
     accessLogs,
-    registeredTags,
     todayAccesses,
     activeUsers,
     deniedAttempts,
     toggleAlarm,
-    addTag,
-    removeTag,
   } = useAccessControl()
 
   return(
@@ -30,14 +27,14 @@ export default function Dashboard(){
         deniedAttempts={deniedAttempts}
       />
 
-      <div className="grid gap-6 lg:grid-cols-3 items-start">
+      <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 flex flex-col">
           <AccessLogTable logs={accessLogs} />
         </div>
 
         <div className="flex flex-col gap-6">
           <AlarmControl active={alarmActive} onToggle={toggleAlarm} />
-          <TagManager tags={registeredTags} onAddTag={addTag} onRemoveTag={removeTag} />
+          <TagManager />
         </div>
       </div>
     </div>

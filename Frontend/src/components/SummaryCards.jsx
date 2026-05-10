@@ -1,4 +1,4 @@
-import { Activity, Users, ShieldAlert, Car } from "lucide-react";
+import { Activity, Users, ShieldAlert, Car } from "lucide-react"
 import { Card, CardContent } from "./ui/Card"
 
 export default function SummaryCards({todayAccesses, activeUsers, deniedAttempts}){

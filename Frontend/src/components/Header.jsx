@@ -5,8 +5,8 @@ import { useAuth } from "../contexts/AuthContext"
 import UserProfileSidebar from "./UserProfileSidebar"
 
 export default function Header({isConnected, uptime}){
-    const[isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const {user} = useAuth();
+    const[isSidebarOpen, setIsSidebarOpen] = useState(false)
+    const {user} = useAuth()
 
     return(
         <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

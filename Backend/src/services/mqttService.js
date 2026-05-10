@@ -102,12 +102,12 @@ const updateUserConfig = async (admins, authorizedUsers) => {
 const syncUsers = async () => {
     try{
         // Busca tags existentes de Administradores
-        const adminDocs = await admins.find({rfid_tag: {$ne: null, $ne: ""}});
-        const adminTags = adminDocs.map(a => a.rfid_tag);
+        const adminDocs = await admins.find({});
+        const adminTags = adminDocs.map(a => a.rfid_tag).filter(tag => tag != null && tag.trim() !== "");
 
         // Busca tags de Membros
         const memberDocs = await members.find({});
-        const memberTags = memberDocs.map(m => m.rfid_tag);
+        const memberTags = memberDocs.map(m => m.rfid_tag).filter(tag => tag != null && tag.trim() !== "");
 
         await updateUserConfig(adminTags, memberTags);
 

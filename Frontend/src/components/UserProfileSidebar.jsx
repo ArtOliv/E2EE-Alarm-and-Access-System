@@ -1,95 +1,114 @@
-import { useState, useEffect } from "react";
-import { X, LogOut, Key, UserCircle, ShieldCheck, Plus, UserPlus, Trash2, Users } from "lucide-react";
-import { useAuth } from "../contexts/AuthContext";
-import { Button } from "./ui/Button";
-import { Input } from "./ui/Input";
-import { api } from "../services/api";
+import { useState, useEffect } from "react"
+import { X, LogOut, Key, UserCircle, ShieldCheck, Plus, UserPlus, Trash2, Users } from "lucide-react"
+import { useAuth } from "../contexts/AuthContext"
+import { Button } from "./ui/Button"
+import { Input } from "./ui/Input"
+import { api } from "../services/api"
 
 export default function UserProfileSidebar({isOpen, onClose}){
-    const {user, logout} = useAuth();
+    const {user, logout} = useAuth()
 
-    // Estado para alteração de senha
-    const [showPasswordForm, setShowPasswordForm] = useState(false);
-    const [oldPassword, setOldPassword] = useState("");
-    const [newPassword, setNewPassword] = useState("");
-    const [message, setMessage] = useState({text: "", type: ""});
-    const [isLoading, setIsLoading] = useState(false);
+    // Estados para alteração de senha
+    const [showPasswordForm, setShowPasswordForm] = useState(false)
+    const [oldPassword, setOldPassword] = useState("")
+    const [newPassword, setNewPassword] = useState("")
+    const [message, setMessage] = useState({text: "", type: ""})
+    const [isLoading, setIsLoading] = useState(false)
 
-    // Estado para adicionar admins
-    const [showAdminForm, setShowAdminForm] = useState(false);
-    const [newAdmin, setNewAdmin] = useState({name: "", email: "", password: "", rfid_tag: ""});
-    const [adminMessage, setAdminMessage] = useState({text: "", type: ""});
-    const [isAdminLoading, setIsAdminLoading] = useState(false);
+    // Estados para adicionar admins
+    const [showAdminForm, setShowAdminForm] = useState(false)
+    const [newAdmin, setNewAdmin] = useState({name: "", email: "", password: "", rfid_tag: ""})
+    const [adminMessage, setAdminMessage] = useState({text: "", type: ""})
+    const [isAdminLoading, setIsAdminLoading] = useState(false)
 
-    // Estado para Lista de admins
-    const [adminList, setAdminList] = useState([]);
+    // Estados para Lista de admins
+    const [adminList, setAdminList] = useState([])
+
+    useEffect(() => {
+        if (message.text) {
+            const timer = setTimeout(() => {
+                setMessage({ text: "", type: "" });
+            }, 5000); 
+            return () => clearTimeout(timer);
+        }
+    }, [message]);
+
+    useEffect(() => {
+        if (adminMessage.text) {
+            const timer = setTimeout(() => {
+                setAdminMessage({ text: "", type: "" });
+            }, 5000); 
+            return () => clearTimeout(timer);
+        }
+    }, [adminMessage]);
 
     useEffect(() => {
         if(isOpen && user?.role === "MASTER"){
-            fetchAdmins();
+            fetchAdmins()
         }
-    }, [isOpen, user]);
+    }, [isOpen, user])
 
     const fetchAdmins = async () => {
         try{
-            const response =await api.get("/admins");
-            setAdminList(response.data);
+            const response =await api.get("/admins")
+            setAdminList(response.data)
         } catch(error){
-            console.error("Erro ao buscar admins:", error);
+            console.error("Erro ao buscar admins:", error)
         }
-    };
+    }
 
     const handleChangePassword = async (e) => {
-        e.preventDefault();
-        setIsLoading(true);
-        setMessage({text: "", type: ""});
+        e.preventDefault()
+        setIsLoading(true)
+        setMessage({text: "", type: ""})
 
         try{
-            const response = await api.put("/update-password", {oldPassword, newPassword});
-            setMessage({text: response.data.message, type: "success"});
+            const response = await api.put("/update-password", {oldPassword, newPassword})
+            setMessage({text: response.data.message, type: "success"})
         } catch(error){
-            setMessage({text: error.response?.data?.error || "Erro ao atualizar senha", type: "error"});
+            setMessage({text: error.response?.data?.error || "Erro ao atualizar senha", type: "error"})
         } finally {
-            setOldPassword("");
-            setNewPassword("");
-            setIsLoading(false);
+            setOldPassword("")
+            setNewPassword("")
+            setIsLoading(false)
         }
-    };
+    }
 
     const handleCreateAdmin = async (e) => {
-        e.preventDefault();
-        setIsAdminLoading(true);
-        setAdminMessage({text: "", type: ""});
+        e.preventDefault()
+        setIsAdminLoading(true)
+        setAdminMessage({text: "", type: ""})
 
         try{
-            const response = await api.post("/create-admin", newAdmin);
-            setAdminMessage({text: response.data.message, type: "success"});
-            fetchAdmins();
+            const response = await api.post("/create-admin", newAdmin)
+            setAdminMessage({text: response.data.message, type: "success"})
+            fetchAdmins()
         } catch(error){
-            setAdminMessage({text: error.response?.data?.error || "Erro ao criar administrador", type: "error"});
+            setAdminMessage({text: error.response?.data?.error || "Erro ao criar administrador", type: "error"})
         } finally {
-            setNewAdmin({name: "", email: "", password: "", rfid_tag: ""});
-            setIsAdminLoading(false);
+            setNewAdmin({name: "", email: "", password: "", rfid_tag: ""})
+            setIsAdminLoading(false)
         }
-    };
+    }
 
     const handleDeleteAdmin = async (id) => {
-        if(!window.confirm("Tem certeza que deseja excluir este administrador?")) return;
+        if(!window.confirm("Tem certeza que deseja excluir este administrador?")) return
 
         try{
-            await api.delete(`/admin/${id}`);
-            setAdminList(adminList.filter(admin => admin._id !== id));
+            await api.delete(`/admin/${id}`)
+            setAdminList(adminList.filter(admin => admin._id !== id))
         } catch(error){
-            console.error("Erro ao excluir administrador:", error);
-            alert("Não foi possível excluir o administrador.");
+            console.error("Erro ao excluir administrador:", error)
+            alert("Não foi possível excluir o administrador.")
         }
-    };
+    }
 
     return(
         <>
             <div className={`fixed inset-0 z-40 bg-background/80 backdrop-blur-sm transition-all duration-300 ${isOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"}`} onClick={onClose} />
             
             <div className={`fixed top-0 right-0 h-full w-full max-w-sm bg-background border-l border-border shadow-2xl z-50 p-6 flex flex-col transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
+                {/* Header da Sidebar */}
                 <div className="flex items-center justify-between border-b border-border/50 pb-4 mb-6">
                     <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
                         <UserCircle className="text-primary" />
@@ -100,6 +119,7 @@ export default function UserProfileSidebar({isOpen, onClose}){
                     </button>
                 </div>
 
+                {/* Informação do Usuário */}
                 <div className="bg-secondary/30 rounded-lg p-4 mb-8 border-b border-border/50">
                     <p className="text-lg font-semibold text-foreground">{user?.name}</p>
                     <p className="text-sm text-muted-foreground mb-3">{user?.email}</p>
@@ -110,6 +130,7 @@ export default function UserProfileSidebar({isOpen, onClose}){
                 </div>
 
                 <div className="flex-1 flex flex-col min-h-0">
+                    {/* Atualização de senha */}
                     <div className="shrink-0">
                         <div className="flex items-center justify-between mb-4 border-t border-border/50 pt-6">
                             <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
@@ -122,7 +143,7 @@ export default function UserProfileSidebar({isOpen, onClose}){
                                 onClick={() => setShowPasswordForm(!showPasswordForm)}
                                 className="border-primary/50 text-primary hover:bg-primary/10 cursor-pointer"
                             >
-                                <Plus className="h-4 w-4" />
+                                <Plus className={`h-4 w-4 transition-transform duration-200 ${showPasswordForm ? "rotate-45" : ""}`} />
                             </Button>
                         </div>
 
@@ -155,9 +176,11 @@ export default function UserProfileSidebar({isOpen, onClose}){
                             </div>
                         </div>
                     </div>
-
+                    
+                    {/* Configurações do Admin Mestre */}
                     {user?.role === "MASTER" && (
                         <div className="flex-1 flex flex-col min-h-0 mb-4 pt-4">
+                            {/* Adicionar Administrador */}
                             <div className="flex items-center justify-between mb-4 h-9">
                                 <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
                                     <UserPlus size={16} className="text-muted-foreground" />
@@ -169,7 +192,7 @@ export default function UserProfileSidebar({isOpen, onClose}){
                                     onClick={() => setShowAdminForm(!showAdminForm)}
                                     className="border-primary/50 text-primary hover:bg-primary/10 cursor-pointer"
                                 >
-                                    <Plus className="h-4 w-4" />
+                                    <Plus className={`h-4 w-4 transition-transform duration-200 ${showAdminForm ? "rotate-45" : ""}`} />
                                 </Button>
                             </div>
 
@@ -212,7 +235,8 @@ export default function UserProfileSidebar({isOpen, onClose}){
                                     </form>
                                 </div>
                             </div>
-
+                            
+                            {/* Tabela de Administradores Cadastrados */}
                             <div className="flex-1 flex flex-col mt-2 pt-5 border-t border-border/50 min-h-0">
                                 <h4 className="text-sm font-semibold text-muted-foreground mb-3 flex items-center gap-2 shrink-0">
                                     <Users size={16} />
@@ -248,7 +272,8 @@ export default function UserProfileSidebar({isOpen, onClose}){
                         </div>
                     )}
                 </div>
-
+                
+                {/* Botão de Logout */}
                 <div className="pt-6 border-t border-border/50 mt-auto">
                     <Button variant="ghost" onClick={logout} className="w-full text-destructive hover:bg-destructive/15 hover:text-destructive flex items-center gap-2 cursor-pointer">
                         <LogOut size={18} />
