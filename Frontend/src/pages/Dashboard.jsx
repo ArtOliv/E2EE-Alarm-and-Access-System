@@ -9,12 +9,10 @@ export default function Dashboard(){
   const{
     isConnected,
     uptime,
-    alarmActive,
     accessLogs,
     todayAccesses,
     activeUsers,
     deniedAttempts,
-    toggleAlarm,
   } = useAccessControl()
 
   return(
@@ -33,7 +31,7 @@ export default function Dashboard(){
         </div>
 
         <div className="flex flex-col gap-6">
-          <AlarmControl active={alarmActive} onToggle={toggleAlarm} />
+          <AlarmControl />
           <TagManager />
         </div>
       </div>

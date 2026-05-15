@@ -17,7 +17,6 @@ const initialAccessLogs = [
 export function useAccessControl() {
   const [isConnected, setIsConnected] = useState(true)
   const [uptime, setUptime] = useState('2h 34m 15s')
-  const [alarmActive, setAlarmActive] = useState(false)
   const [accessLogs, setAccessLogs] = useState(initialAccessLogs)
 
   // Simula atualizações de uptime e status de conexão
@@ -36,10 +35,6 @@ export function useAccessControl() {
     return () => clearInterval(interval)
   }, [])
 
-  const toggleAlarm = useCallback(() => {
-    setAlarmActive((prev) => !prev)
-  }, [])
-
   // Essas variáveis temporárias vão sumir quando você integrar o banco de dados real nos SummaryCards
   const todayAccesses = accessLogs.length
   const activeUsers = 0 // Temporário até a integração real do SummaryCards
@@ -48,11 +43,9 @@ export function useAccessControl() {
   return {
     isConnected,
     uptime,
-    alarmActive,
     accessLogs,
     todayAccesses,
     activeUsers,
     deniedAttempts,
-    toggleAlarm
   }
 }

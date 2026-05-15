@@ -37,9 +37,13 @@ fastify.register(require("@fastify/cookie"), {
     hook: "onRequest"
 });
 
+// Registro do WebSocket
+fastify.register(require("@fastify/websocket"));
+
 // Registro das rotas da API
-fastify.register(require("./src/routes/auth"), {prefix: "/api"});
-fastify.register(require("./src/routes/users"), {prefix: "/api"});
+fastify.register(require("./src/routes/auth"), {prefix: "/api/auth"});
+fastify.register(require("./src/routes/users"), {prefix: "/api/users"});
+fastify.register(require("./src/routes/alarm"), {prefix: "/api/alarm"});
 
 // Inicia server Fastify
 const startFastify = async () => {

@@ -9,7 +9,7 @@ export function AuthProvider({children}){
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        api.get("/verify") // Verifica sessão no Backend
+        api.get("/auth/verify") // Verifica sessão no Backend
             .then((response) => {
                 setUser(response.data.user);
                 setIsAuthenticated(true);
@@ -32,7 +32,7 @@ export function AuthProvider({children}){
     // Função para logout
     const logout = async () => {
         try{
-            await api.post("/logout");
+            await api.post("/auth/logout");
         } catch(err){
             console.error("Erro ao fazer logout", err);
         } finally{

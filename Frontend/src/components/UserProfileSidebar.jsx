@@ -3,6 +3,7 @@ import { X, LogOut, Key, UserCircle, ShieldCheck, Plus, UserPlus, Trash2, Users 
 import { useAuth } from "../contexts/AuthContext"
 import { Button } from "./ui/Button"
 import { Input } from "./ui/Input"
+import { cn } from "../lib/utils"
 import { api } from "../services/api"
 
 export default function UserProfileSidebar({isOpen, onClose}){
@@ -50,7 +51,7 @@ export default function UserProfileSidebar({isOpen, onClose}){
 
     const fetchAdmins = async () => {
         try{
-            const response =await api.get("/admins")
+            const response =await api.get("/users/admins")
             setAdminList(response.data)
         } catch(error){
             console.error("Erro ao buscar admins:", error)
@@ -63,7 +64,7 @@ export default function UserProfileSidebar({isOpen, onClose}){
         setMessage({text: "", type: ""})
 
         try{
-            const response = await api.put("/update-password", {oldPassword, newPassword})
+            const response = await api.put("/auth/update-password", {oldPassword, newPassword})
             setMessage({text: response.data.message, type: "success"})
         } catch(error){
             setMessage({text: error.response?.data?.error || "Erro ao atualizar senha", type: "error"})
@@ -80,7 +81,7 @@ export default function UserProfileSidebar({isOpen, onClose}){
         setAdminMessage({text: "", type: ""})
 
         try{
-            const response = await api.post("/create-admin", newAdmin)
+            const response = await api.post("/users/create-admin", newAdmin)
             setAdminMessage({text: response.data.message, type: "success"})
             fetchAdmins()
         } catch(error){
@@ -95,7 +96,7 @@ export default function UserProfileSidebar({isOpen, onClose}){
         if(!window.confirm("Tem certeza que deseja excluir este administrador?")) return
 
         try{
-            await api.delete(`/admin/${id}`)
+            await api.delete(`/users/admin/${id}`)
             setAdminList(adminList.filter(admin => admin._id !== id))
         } catch(error){
             console.error("Erro ao excluir administrador:", error)
@@ -105,9 +106,9 @@ export default function UserProfileSidebar({isOpen, onClose}){
 
     return(
         <>
-            <div className={`fixed inset-0 z-40 bg-background/80 backdrop-blur-sm transition-all duration-300 ${isOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"}`} onClick={onClose} />
+            <div className={cn("fixed inset-0 z-40 bg-background/80 backdrop-blur-sm transition-all duration-300", isOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none")} onClick={onClose} />
             
-            <div className={`fixed top-0 right-0 h-full w-full max-w-sm bg-background border-l border-border shadow-2xl z-50 p-6 flex flex-col transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
+            <div className={cn("fixed top-0 right-0 h-full w-full max-w-sm bg-background border-l border-border shadow-2xl z-50 p-6 flex flex-col transition-transform duration-300 ease-in-out", isOpen ? "translate-x-0" : "translate-x-full")}>
                 {/* Header da Sidebar */}
                 <div className="flex items-center justify-between border-b border-border/50 pb-4 mb-6">
                     <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
@@ -143,15 +144,15 @@ export default function UserProfileSidebar({isOpen, onClose}){
                                 onClick={() => setShowPasswordForm(!showPasswordForm)}
                                 className="border-primary/50 text-primary hover:bg-primary/10 cursor-pointer"
                             >
-                                <Plus className={`h-4 w-4 transition-transform duration-200 ${showPasswordForm ? "rotate-45" : ""}`} />
+                                <Plus className={cn("h-4 w-4 transition-transform duration-200", showPasswordForm ? "rotate-45" : "")} />
                             </Button>
                         </div>
 
-                        <div className={`grid transition-all duration-300 ease-in-out ${showPasswordForm ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
+                        <div className={cn("grid transition-all duration-300 ease-in-out", showPasswordForm ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0")}>
                             <div className="overflow-hidden p-1">
                                 <form onSubmit={handleChangePassword} className="space-y-4">
                                     {message.text && (
-                                        <div className={`p-3 rounded text-sm ${message.type === "success"? "bg-success/15 text-success border border-success/20" : "bg-destructive/15 text-destructive border border-destructive/20"}`}>
+                                        <div className={cn("p-3 rounded text-sm", message.type === "success" ? "bg-success/15 text-success border border-success/20" : "bg-destructive/15 text-destructive border border-destructive/20")}>
                                             {message.text}
                                         </div>
                                     )}
@@ -192,15 +193,15 @@ export default function UserProfileSidebar({isOpen, onClose}){
                                     onClick={() => setShowAdminForm(!showAdminForm)}
                                     className="border-primary/50 text-primary hover:bg-primary/10 cursor-pointer"
                                 >
-                                    <Plus className={`h-4 w-4 transition-transform duration-200 ${showAdminForm ? "rotate-45" : ""}`} />
+                                    <Plus className={cn("h-4 w-4 transition-transform duration-200", showAdminForm ? "rotate-45" : "")} />
                                 </Button>
                             </div>
 
-                            <div className={`grid transition-all duration-300 ease-in-out ${showAdminForm ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
+                            <div className={cn("grid transition-all duration-300 ease-in-out", showAdminForm ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0")}>
                                 <div className="overflow-hidden p-1">
                                     <form onSubmit={handleCreateAdmin} className="space-y-4">
                                         {adminMessage.text && (
-                                            <div className={`p-3 rounded text-sm ${adminMessage.type === "success"? "bg-success/15 text-success border border-success/20" : "bg-destructive/15 text-destructive border border-destructive/20"}`}>
+                                            <div className={cn("p-3 rounded text-sm", adminMessage.type === "success"? "bg-success/15 text-success border border-success/20" : "bg-destructive/15 text-destructive border border-destructive/20")}>
                                                 {adminMessage.text}
                                             </div>
                                         )}
@@ -226,8 +227,10 @@ export default function UserProfileSidebar({isOpen, onClose}){
                                         />
                                         <Input
                                             placeholder="Tag ID (Opcional)"
+                                            maxLength="8"
                                             value={newAdmin.rfid_tag}
                                             onChange={(e) => setNewAdmin({...newAdmin, rfid_tag: e.target.value})}
+                                            className="font-mono uppercase"
                                         />
                                         <Button type="submit" disabled={isAdminLoading || !newAdmin.name || !newAdmin.email || !newAdmin.password} className="w-full cursor-pointer">
                                             {isAdminLoading ? "Cadastrando..." : "Cadastrar Admin"}

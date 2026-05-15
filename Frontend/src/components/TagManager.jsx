@@ -3,9 +3,10 @@ import { Tag, Plus, Trash2, Users } from "lucide-react"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "./ui/Card"
 import { Button } from "./ui/Button"
 import { Input } from "./ui/Input"
+import { cn } from "../lib/utils"
 import { api } from "../services/api"
 
-export default function TagManager({tags, onAddTag, onRemoveTag}){
+export default function TagManager(){
     // Estados para a lista de usuários
     const [membersList, setMembersList] = useState([])
     const [message, setMessage] = useState({text: "", type: ""})
@@ -30,7 +31,7 @@ export default function TagManager({tags, onAddTag, onRemoveTag}){
 
     const fetchMembers = async () => {
         try{
-            const response = await api.get("/members")
+            const response = await api.get("/users/members")
             setMembersList(response.data)
         } catch(error){
             console.error("Erro ao buscar usuários:", error)
@@ -43,7 +44,7 @@ export default function TagManager({tags, onAddTag, onRemoveTag}){
         setMessage({text: "", type: ""})
 
         try{
-            const response = await api.post("/create-member", newMember)
+            const response = await api.post("/users/create-member", newMember)
             setMessage({text: response.data.message, type: "success"})
             fetchMembers()
         } catch(error){
@@ -58,7 +59,7 @@ export default function TagManager({tags, onAddTag, onRemoveTag}){
         if(!window.confirm("Tem certeza que deseja excluir este usuário?")) return
 
         try{
-            await api.delete(`/member/${id}`)
+            await api.delete(`/users/member/${id}`)
             setMembersList(membersList.filter(member => member._id !== id))
         } catch(error){
             console.error("Erro ao remover usuário:", error)
@@ -78,17 +79,17 @@ export default function TagManager({tags, onAddTag, onRemoveTag}){
                         <CardDescription>Cadastrar e remover TAG IDs</CardDescription>
                     </div>
                     <Button size="sm" variant="outline" onClick={() => setShowForm(!showForm)} className="border-accent/50 text-accent hover:bg-accent/10 cursor-pointer">
-                        <Plus className={`h-4 w-4 transition-transform duration-200 ${showForm ? "rotate-45" : ""}`} />
+                        <Plus className={cn("h-4 w-4 transition-transform duration-200", showForm ? "rotate-45" : "")} />
                     </Button>
                 </div>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col min-h-0">
                 {/* Formulário de Novos Usuários Autorizados */}
-                <div className={`grid transition-all duration-300 ease-in-out shrink-0 ${showForm ? "grid-rows-[1fr] opacity-100 mb-4" : "grid-rows-[0fr] opacity-0"}`}>
+                <div className={cn("grid transition-all duration-300 ease-in-out shrink-0", showForm ? "grid-rows-[1fr] opacity-100 mb-4" : "grid-rows-[0fr] opacity-0")}>
                     <div className="overflow-hidden p-1">
                         <form onSubmit={handleCreateMember} className="space-y-3 rounded-lg border border-border bg-secondary/30 p-3">
                             {message.text && (
-                                <div className={`p-3 rounded text-sm ${message.type === "success" ? "bg-success/15 text-success border border-success/20" : "bg-destructive/15 text-destructive border border-destructive/20"}`}>
+                                <div className={cn("p-3 rounded text-sm", message.type === "success" ? "bg-success/15 text-success border border-success/20" : "bg-destructive/15 text-destructive border border-destructive/20")}>
                                     {message.text}
                                 </div>
                             )}

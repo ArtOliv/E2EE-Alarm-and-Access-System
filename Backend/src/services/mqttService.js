@@ -5,6 +5,30 @@ const users = require("../models/users");
 const admins = require("../models/admins")
 const members = require("../models/members")
 
+// Cria uma lista que guarda os clientes conectados
+const activeSockets = new Set();
+
+// Adiciona novo cliente que abre a interface
+const addSocketConnection = (socket) => {
+    activeSockets.add(socket);
+
+    // Exclui usuário ao fechar a interface
+    socket.on("close", () => {
+        activeSockets.delete(socket);
+    });
+};
+
+// Dispara mensagem para todo cliente conectado
+const broadcastAlarmAck = (cmd) => {
+    const payload = JSON.stringify({event: "cmd_ack", cmd: cmd});
+    
+    for(const socket of activeSockets){
+        if(socket && socket.readyState === 1){
+            socket.send(payload);
+        }
+    }
+};
+
 // Trata o que for recebido nos tópicos pelo ESP32
 const initMqttLogic = () => {
     mqttClient.on("message", async (topic, payload) => {
@@ -14,13 +38,18 @@ const initMqttLogic = () => {
             const data = JSON.parse(messageStr);
 
             if(topic === "system/alarm/cmd/ack"){
-                await command.findByIdAndUpdate(data.cmd_id, {
-                    status: "RECEIVED_BY_ESP"
-                });
-                console.log(`Comando ${data.cmd_id} confirmado pelo ESP32.`);
-            }
+                const updateCmd = await command.findByIdAndUpdate(
+                    data.cmd_id, 
+                    {status: "RECEIVED_BY_ESP"},
+                    {new: true}
+                );
 
-            else if(topic === "system/alarm/log"){
+                console.log(`Comando ${data.cmd_id} confirmado pelo ESP32.`);
+            
+                if(updateCmd){
+                    broadcastAlarmAck(updateCmd.cmd);
+                }
+            } else if(topic === "system/alarm/log"){
                 await log.create(data);
                 console.log(`Log salvo: [${data.status}] ID: ${data.device_id}`);
                 
@@ -118,4 +147,4 @@ const syncUsers = async () => {
     }
 }
 
-module.exports = { initMqttLogic, sendAlarmCommand, updateUserConfig, syncUsers };
+module.exports = { initMqttLogic, sendAlarmCommand, updateUserConfig, syncUsers, addSocketConnection };
