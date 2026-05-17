@@ -9,7 +9,6 @@ export default function Dashboard(){
   const{
     isConnected,
     uptime,
-    accessLogs,
     todayAccesses,
     activeUsers,
     deniedAttempts,
@@ -27,7 +26,7 @@ export default function Dashboard(){
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 flex flex-col">
-          <AccessLogTable logs={accessLogs} />
+          <AccessLogTable />
         </div>
 
         <div className="flex flex-col gap-6">

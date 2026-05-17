@@ -19,9 +19,33 @@ const addSocketConnection = (socket) => {
 };
 
 // Dispara mensagem para todo cliente conectado
-const broadcastAlarmAck = (cmd) => {
-    const payload = JSON.stringify({event: "cmd_ack", cmd: cmd});
+const broadcastAlarmAck = (id, cmd, status) => {
+    const payload = JSON.stringify({event: "cmd_ack", id: id, cmd: cmd, status: status});
     
+    for(const socket of activeSockets){
+        if(socket && socket.readyState === 1){
+            socket.send(payload);
+        }
+    }
+};
+
+// Dispara novo log em tempo real
+const broadcastNewLog = (logDoc, source) => {
+    const payload = JSON.stringify({
+        event: "new_log",
+        log: {
+            id: logDoc._id,
+            time: new Date(logDoc.createdAt).toLocaleTimeString("pt-BR"),
+            date: new Date(logDoc.createdAt).toLocaleDateString("pt-BR"),
+            user: logDoc.user_name || logDoc.admin_name || "Desconhecido",
+            tagId: source === "COMMAND" ? "Dashboard" : (log.uid === "NONE" ? "-" : logDoc.uid),
+            role: source === "COMMAND" ? "ADMIN" : logDoc.role,
+            status: source === "COMMAND" ? (logDoc.status === "RECEIVED_BY_ESP" ? "AUTHORIZED" : "PENDING") : logDoc.status,
+            state: source === "COMMAND" ? logDoc.cmd : logDoc.state,
+            source: source
+        }
+    });
+
     for(const socket of activeSockets){
         if(socket && socket.readyState === 1){
             socket.send(payload);
@@ -47,11 +71,32 @@ const initMqttLogic = () => {
                 console.log(`Comando ${data.cmd_id} confirmado pelo ESP32.`);
             
                 if(updateCmd){
-                    broadcastAlarmAck(updateCmd.cmd);
+                    broadcastAlarmAck(updateCmd._id, updateCmd.cmd, "AUTHORIZED");
                 }
             } else if(topic === "system/alarm/log"){
-                await log.create(data);
-                console.log(`Log salvo: [${data.status}] ID: ${data.device_id}`);
+                let resolvedName = "Desconhecido";
+
+                if(data.role === "SYSTEM"){
+                    resolvedName = "Sistema";
+                } else if(data.role === "ADMIN" || data.role === "USER"){
+                    const safeUid = data.uid && data.uid !== "NONE" ? data.uid.toUpperCase().trim() : null;
+                    if(safeUid){
+                        const adminMatch = await admins.findOne({rfid_tag: safeUid}).lean();
+                        if(adminMatch){
+                            resolvedName = adminMatch.name;
+                        } else {
+                            const memberMatch = await members.findOne({rfid_tag: safeUid}).lean();
+                            if(memberMatch) resolvedName = memberMatch.name;
+                        }
+                    }
+                }
+
+                data.user_name = resolvedName;
+
+                const savedLog = await log.create(data);
+                console.log(`Log salvo: [${data.status}] ID: ${data.device_id} Usuário: ${resolvedName}`);
+
+                broadcastNewLog(savedLog, "LOG");
                 
                 // Trata sincronização com o ESP32
                 if(data.role === "SYSTEM" && data.status === "INFO_BOOT"){
@@ -77,12 +122,19 @@ const initMqttLogic = () => {
 
 // Trata o que for enviado para o ESP32
 const sendAlarmCommand = async (adminId, action) => {
+    // Busca o nome do admin
+    const adminUser = await admins.findById(adminId).lean();
+    const adminName = adminUser.name;
+
     // Cria o comando no banco de dados
     const newCommand = await command.create({
         cmd: action,
         admin_id: adminId,
+        admin_name: adminName,
         status: "SENT"
     });
+
+    broadcastNewLog(newCommand, "COMMAND");
 
     // Envia o JSON para o ESP32
     const payload = JSON.stringify({

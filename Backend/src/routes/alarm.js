@@ -1,5 +1,5 @@
 const { Connection } = require("mongoose");
-const {sendAlarmCommand, addSocketConnection} = require("../services/mqttService");
+const { sendAlarmCommand, addSocketConnection } = require("../services/mqttService");
 const command = require("../models/command");
 
 module.exports = async function(fastify, options){

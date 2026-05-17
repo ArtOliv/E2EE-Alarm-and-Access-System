@@ -44,6 +44,7 @@ fastify.register(require("@fastify/websocket"));
 fastify.register(require("./src/routes/auth"), {prefix: "/api/auth"});
 fastify.register(require("./src/routes/users"), {prefix: "/api/users"});
 fastify.register(require("./src/routes/alarm"), {prefix: "/api/alarm"});
+fastify.register(require("./src/routes/logs"), {prefix: "/api/logs"});
 
 // Inicia server Fastify
 const startFastify = async () => {

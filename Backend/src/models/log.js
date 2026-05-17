@@ -10,6 +10,10 @@ const LogSchema = new mongoose.Schema({
         type: String,
         default: "NONE"
     },
+    user_name: {
+        type: String,
+        required: true
+    },
     role: {
         type: String,
         enum: ["SYSTEM", "ADMIN", "USER", "UNKNOWN"],

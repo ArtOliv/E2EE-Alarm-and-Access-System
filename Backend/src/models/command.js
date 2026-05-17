@@ -10,6 +10,10 @@ const CommandSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    admin_name: {
+        type: String,
+        required: true
+    },
     status: {
         type: String,
         enum: ["SENT", "RECEIVED_BY_ESP"],
